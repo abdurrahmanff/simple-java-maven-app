@@ -12,7 +12,7 @@ node {
         }
         stage('Manual Approval') {
             def value = input message: 'Lanjutkan ke tahap Deploy?',
-                parameters: [choice(name: 'Validasi', choices: ['Proceed', 'Abort'])]
+                parameters: [choice(name: 'Validasi', choices: ['Proceed', 'Abort'], description: 'klik Proceed untuk melanjutkan eksekusi pipeline ke tahap Deploy atau Abort untuk menghentikan eksekusi pipeline')]
             if (value == 'Abort') {
                 currentBuild.result = 'ABORTED'
                 error('Pipeline Aborted.')
