@@ -3,12 +3,20 @@ node {
         stage('Build') {
             sh 'mvn -B -DskipTests clean package'
         }
-        try {
-            stage('Test') {
+        stage('Test') {
+            try {
                 sh 'mvn test'
+            } finally {
+                junit 'target/surefire-reports/*.xml'
             }
-        } finally {
-            junit 'target/surefire-reports/*.xml'
+        }
+        stage('Manual Approval') {
+            def value = input message: 'Lanjutkan ke tahap Deploy?',
+                parameters: [choice(name: 'Validasi', choices: ['Proceed', 'Abort'])]
+            if (value == 'Abort') {
+                currentBuild.result = 'ABORTED'
+                error('Pipeline Aborted.')
+            }
         }
         stage('Deliver') {
             sh './jenkins/scripts/deliver.sh'
